@@ -5,9 +5,8 @@
 // Inialize session
 session_start();
 
-// Check, if username session is NOT set then this page will jump to login page
 if (!isset($_SESSION['admin_user'])) {
-header('Location: index.html');
+     header('Location: index.html');
 }
 
 ?>
@@ -34,7 +33,6 @@ header('Location: index.html');
       $('#dtable').dataTable({
                 "aLengthMenu": [[5, 10, 15, 25, 50, 100 , -1], [5, 10, 15, 25, 50, 100, "All"]],
                 "iDisplayLength": 10
-                //"destroy":true;
             });
   })
     </script>
@@ -62,7 +60,14 @@ height:100%;
 width:100%;
 position:absolute;
 }
-#loader{
+
+input[type=file] {
+    border: 2px dotted #999;
+    border-radius: 10px;
+    margin-left: 9px;
+    width: 231px!important;
+}
+  #loader{
         position: fixed;
         left: 0px;
         top: 0px;
@@ -72,6 +77,8 @@ position:absolute;
         background: url('img/lg.flip-book-loader.gif') 50% 50% no-repeat rgb(249,249,249);
         opacity: 1;
     }
+
+}
   </style>
 
     <script src="jquery.min.js"></script>
@@ -110,27 +117,9 @@ position:absolute;
         <!-- Links -->
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
-          <!-- Left -->
           <ul class="navbar-nav mr-auto">
-          <!--   <li class="nav-item active">
-              <a class="nav-link waves-effect" href="#">Home
-                <span class="sr-only">(current)</span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link waves-effect" href="#">About
-                MDB</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link waves-effect" href="#">Free
-                download</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link waves-effect" href="#">Free
-                tutorials</a>
-            </li> -->
           </ul>
-            <?php 
+              <?php 
 
              require_once("include/connection.php");
 
@@ -143,14 +132,15 @@ position:absolute;
               $row = mysqli_fetch_array($r);
 
                $id=$row['admin_user'];
-               // $fname=$row['fname'];
+               $admin_status=$row['admin_status'];
+                $name=$row['name'];
                // $lname=$row['lname'];
 
             ?>
 
           <!-- Right -->
           <ul class="navbar-nav nav-flex-icons">
-                <li style="margin-top: 10px;">Welcome!,</font> <?php echo ucwords(htmlentities($id)); ?></li>
+            <li style="margin-top: 10px;">Welcome!,</font> <?php echo ucwords(htmlentities($id)); ?></li>
             <li class="nav-item">
               <a href="#" class="nav-link waves-effect" target="_blank">
                 <i class="fab fa-facebook-f"></i>
@@ -196,7 +186,7 @@ position:absolute;
           <i class="fas fa-users"></i>  View User</a>
         <a href="add_document.php" class="list-group-item list-group-item-action waves-effect">
           <i class="fas fa-file-medical"></i> Add Document</a>
-        <a href="view_userfile.php" class="list-group-item list-group-item-action waves-effect">
+        <a href="#" class="list-group-item list-group-item-action waves-effect">
           <i class="fas fa-folder-open"></i> View User File</a>
             <a href="admin_log.php" class="list-group-item list-group-item-action waves-effect">
           <i class="fas fa-chalkboard-teacher"></i> Admin logged</a>
@@ -207,6 +197,48 @@ position:absolute;
       </div>
 
     </div>
+      <!--Add admin-->
+   <div class="modal fade" id="modalRegisterForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <form action="create_Admin.php" method="POST">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold"><i class="fas fa-user-plus"></i> Add Admin</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+           <div class="md-form mb-5">
+          <input type="hidden" id="orangeForm-name" name="status" value = "Admin" class="form-control validate">
+        </div>
+        <div class="md-form mb-5">
+          <i class="fas fa-user prefix grey-text"></i>
+          <input type="text" id="orangeForm-name" name="name" class="form-control validate">
+          <label data-error="wrong" data-success="right" for="orangeForm-name">Your name</label>
+        </div>
+        <div class="md-form mb-5">
+          <i class="fas fa-envelope prefix grey-text"></i>
+          <input type="email" id="orangeForm-email" name="admin_user" class="form-control validate">
+          <label data-error="wrong" data-success="right" for="orangeForm-email">Your email</label>
+        </div>
+
+        <div class="md-form mb-4">
+          <i class="fas fa-lock prefix grey-text"></i>
+          <input type="password" id="orangeForm-pass" name="admin_password" class="form-control validate">
+          <label data-error="wrong" data-success="right" for="orangeForm-pass">Your password</label>
+        </div>
+
+      </div>
+      <div class="modal-footer d-flex justify-content-center">
+        <button class="btn btn-info" name="reg">Sign up</button>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+<!--end modaladmin-->
   <!--Add admin-->
    <div class="modal fade" id="modalRegisterForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
   aria-hidden="true">
@@ -263,7 +295,7 @@ position:absolute;
       </div>
       <div class="modal-body mx-3">
            <div class="md-form mb-5">
-          <input type="hidden" id="orangeForm-name" name="status" value = "Employee" class="form-control validate" required="">
+          <input type="hidden" id="orangeForm-name" name="admin_status" value = "Employee" class="form-control validate" required="">
         </div>
         <div class="md-form mb-5">
           <i class="fas fa-user prefix grey-text"></i>
@@ -291,7 +323,7 @@ position:absolute;
 </div>
 </form>
 <!--end modaluser-->
-
+</form>
   </header>
   <!--Main Navigation-->
  <div id="loader"></div>
@@ -310,79 +342,66 @@ position:absolute;
             <span>/</span>
             <span>Dashboard</span>
           </h4>
-<!-- 
-          <form class="d-flex justify-content-center">
+
+          <div class="d-flex justify-content-center pull-right">
        
-            <input type="search" placeholder="Type your query" aria-label="Search" class="form-control">
-            <button class="btn btn-primary btn-sm my-0 p" type="submit">
-              <i class="fas fa-search"></i>
-            </button>
-
-          </form> -->
-
+            <a href="add_document.php">
+            <button class="btn btn-warning"><i class="far fa-file-image"></i>  View File</button></a>
         </div>
-
       </div>
-      <!-- Heading -->
-      <div class="">
-    <!--   <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalRegisterForm">Add File</button> -->
-    <a href="add_file.php"><button type="button" class="btn btn-success"><i class="fas fa-file-medical"></i>  Add File</button></a>
+      <hr>
+    <div class="modal fade" id="modalRegisterForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Add File Form</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-2">
+      </div>
     </div>
-  
-<hr>
- 
- <div class="col-md-12">
+  </div>
+</div>
 
- <table id="dtable" class = "table table-striped">
-     <thead>
+ <center>
+ <div class="text-center col-md-5">
+<div class="card">
+<h5 class="card-header info-color white-text text-center py-4">
+  <strong>Upload File Form</strong>
+  </h5>
+  <div class="card-body px-lg-5 pt-0">
 
-    <th>Filename</th>
-    <th>FileSize</th>
-    <th>Uploader</th>
-     <th>Status</th>   
-    <th>Date/Time Upload</th>
-    <th>Downloads</th>
-    <th>Action</th>
+    <div class="container">
+      <div class="row"><br><br>
+        <form action="fileprocess.php" method="post" enctype="multipart/form-data" >
+          <div class="col-md-11">
+              <div class="md-form mb-0">
+                <input type="hidden" name= "email" value="<?php echo ucwords(htmlentities($name)); ?>" class="form-control" readonly="">
+                <input type="text"  value="<?php echo ucwords(htmlentities($admin_status)); ?>" class="form-control" readonly="">
+              </div>
+            </div>
+           <label for="subject" class="">Upload File</label>
+          <input type="file" name="myfile"> <br>
+          <button  type="submit" class="btn btn-info btn-rounded btn-block my-4 waves-effect z-depth-0"  name="save" type="submit">UPLOAD</button>
+         <footer style="font-size: 12px"><b>File Type:</b><font color="red"><i>.docx .doc .pptx .ppt .xlsx .xls .pdf .odt</i></font></footer>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
-</thead>
-<tbody>
-
-    
-    <tr>
-        <?php 
-   
-        require_once("include/connection.php");
-
-      $query = mysqli_query($conn,"SELECT DISTINCT ID,NAME,SIZE,EMAIL,ADMIN_STATUS,TIMERS,DOWNLOAD FROM upload_files group by NAME DESC") or die (mysqli_error($con));
-      while($file=mysqli_fetch_array($query)){
-         $id =  $file['ID'];
-         $name =  $file['NAME'];
-         $size =  $file['SIZE'];
-         $uploads =  $file['EMAIL'];
-          $status =  $file['ADMIN_STATUS'];
-         $time =  $file['TIMERS'];
-         $download =  $file['DOWNLOAD'];
-    
-      ?>
-     
-      <td width="20%"><?php echo  $name; ?></td>
-      <td><?php echo floor($size / 1000) . ' KB'; ?></td>
-       <td><?php echo $uploads; ?></td>
-       <td><?php echo $status; ?></td>
-       <td><?php echo $time; ?></td>
-      <td><?php echo $download; ?></td>
-
-
-           <td><a href='downloads.php?file_id=<?php echo $id; ?>'  class="btn btn-sm btn-outline-primary"><i class="fa fa-download"></i></a> <a href='delete.php?ID=<?php echo $id; ?>'  class="btn btn-sm btn-outline-danger"><i class="fa fa-trash"></i></a>
-    </tr>
-<?php } ?>
-</tbody>
-   </table>
-    </div>  
+<!-- Material form login -->
+   <Br><br>
+</div></div>
+ </center>
+        
     <!--Copyright-->
     <hr></div>
     <div class="footer-copyright py-3">
-     <p>All right Reserved &copy; <?php echo date('Y');?> Created By:JunilToledo</p>
+       <p>All right Reserved 2021&copy; <?php echo date('Y');?> Created By: CampCodes</p>
     </div>
     <!--/.Copyright-->
 
@@ -410,3 +429,52 @@ position:absolute;
 </body>
 
 </html>
+<script type="text/javascript">
+   $("#Alert").on("click", function () {
+          
+          // userad();
+          uservalidate();
+          userfile();
+   
+         if (uservalidate() === true && userfile() === true) {
+   
+         };
+   
+   
+   });
+   
+   //    function userad() {
+   // if ($('#orangeForm-name').val() == '') { 
+   //     $('#orangeForm-name').css('border-color', '#dc3545');
+   //  return false;
+   //   } else {
+   //    $('#orangeForm-name').css('border-color', '#28a745'); 
+   //     return true;
+   // }
+
+   function uservalidate() {
+   if ($('#categ').val() == '') { 
+       $('#categ').css('border-color', '#dc3545');
+    return false;
+     } else {
+      $('#categ').css('border-color', '#dc3545'); 
+       return true;
+   }
+   
+   };
+
+      function userfile() {
+   if ($('#file').val() == '') { 
+       $('#file').css('border-color', '#dc3545');
+    return false;
+     } else {
+      $('#file').css('border-color', '#dc3545'); 
+       return true;
+   }
+   
+   };
+   
+
+   
+   
+</script>

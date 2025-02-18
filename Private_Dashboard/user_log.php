@@ -182,7 +182,7 @@ position:absolute;
         <img src="img/images.jpg" width="150px" height="200px;" class="img-fluid" alt="">
       </a>
 
-         <div class="list-group list-group-flush">
+       <div class="list-group list-group-flush">
         <a href="dashboard.php" class="list-group-item active waves-effect">
           <i class="fas fa-chart-pie mr-3"></i>Dashboard
         </a>
@@ -326,23 +326,24 @@ position:absolute;
       <!-- Heading -->
       <div class="">
     <!--   <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalRegisterForm">Add File</button> -->
-    <a href="add_file.php"><button type="button" class="btn btn-success"><i class="fas fa-file-medical"></i>  Add File</button></a>
+    <a href="add_document.php"><button type="button" class="btn btn-info"><i class="fas fa-chevron-circle-left"></i>  Document</button></a>
     </div>
   
 <hr>
  
  <div class="col-md-12">
 
- <table id="dtable" class = "table table-striped">
+  <table id="dtable" class = "table table-striped" style="">
      <thead>
 
-    <th>Filename</th>
-    <th>FileSize</th>
-    <th>Uploader</th>
-     <th>Status</th>   
-    <th>Date/Time Upload</th>
-    <th>Downloads</th>
-    <th>Action</th>
+    <!-- <th>ID</th> -->
+    <th>USER LOGGED</th>    
+     
+     <th>ACTION</th> 
+     <th>SCAN</th>
+     
+   
+
 
 </thead>
 <tbody>
@@ -353,27 +354,25 @@ position:absolute;
    
         require_once("include/connection.php");
 
-      $query = mysqli_query($conn,"SELECT DISTINCT ID,NAME,SIZE,EMAIL,ADMIN_STATUS,TIMERS,DOWNLOAD FROM upload_files group by NAME DESC") or die (mysqli_error($con));
+      $query = mysqli_query($conn,"SELECT * from history_log") or die (mysqli_error($conn));
       while($file=mysqli_fetch_array($query)){
-         $id =  $file['ID'];
-         $name =  $file['NAME'];
-         $size =  $file['SIZE'];
-         $uploads =  $file['EMAIL'];
-          $status =  $file['ADMIN_STATUS'];
-         $time =  $file['TIMERS'];
-         $download =  $file['DOWNLOAD'];
+       //  $id =  $file['id'];
+         $name =  $file['email_address'];
+        
+         $action =  $file['action'];
+         $logintime =  $file['login_time'];
+       
+      
     
       ?>
      
-      <td width="20%"><?php echo  $name; ?></td>
-      <td><?php echo floor($size / 1000) . ' KB'; ?></td>
-       <td><?php echo $uploads; ?></td>
-       <td><?php echo $status; ?></td>
-       <td><?php echo $time; ?></td>
-      <td><?php echo $download; ?></td>
+      <!-- <td><?php echo  $id; ?></td> -->
+      <td><?php echo $name; ?></td>
+     
+      <td><?php echo $action; ?></td>
+      <td><?php echo $logintime; ?></td>
+     
 
-
-           <td><a href='downloads.php?file_id=<?php echo $id; ?>'  class="btn btn-sm btn-outline-primary"><i class="fa fa-download"></i></a> <a href='delete.php?ID=<?php echo $id; ?>'  class="btn btn-sm btn-outline-danger"><i class="fa fa-trash"></i></a>
     </tr>
 <?php } ?>
 </tbody>
@@ -382,7 +381,7 @@ position:absolute;
     <!--Copyright-->
     <hr></div>
     <div class="footer-copyright py-3">
-     <p>All right Reserved &copy; <?php echo date('Y');?> Created By:JunilToledo</p>
+  <p>All right Reserved 2021&copy; <?php echo date('Y');?> Created By:CampCodes</p>
     </div>
     <!--/.Copyright-->
 

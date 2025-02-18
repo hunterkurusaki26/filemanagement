@@ -4,12 +4,19 @@
 
 // Inialize session
 session_start();
+error_reporting(0);
+        require_once("include/connection.php");
+  $id = mysqli_real_escape_string($conn,$_GET['id']);
+
 
 // Check, if username session is NOT set then this page will jump to login page
 if (!isset($_SESSION['admin_user'])) {
 header('Location: index.html');
 }
-
+else{
+    $uname=$_SESSION['admin_user'];
+  //  $desired_dir="user_data/$uname/";
+}
 ?>
 <head>
   <meta charset="utf-8">
@@ -34,7 +41,6 @@ header('Location: index.html');
       $('#dtable').dataTable({
                 "aLengthMenu": [[5, 10, 15, 25, 50, 100 , -1], [5, 10, 15, 25, 50, 100, "All"]],
                 "iDisplayLength": 10
-                //"destroy":true;
             });
   })
     </script>
@@ -207,7 +213,6 @@ position:absolute;
       </div>
 
     </div>
-  <!--Add admin-->
    <div class="modal fade" id="modalRegisterForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
   aria-hidden="true">
   <form action="create_Admin.php" method="POST">
@@ -291,6 +296,7 @@ position:absolute;
 </div>
 </form>
 <!--end modaluser-->
+    <!-- Sidebar -->
 
   </header>
   <!--Main Navigation-->
@@ -323,72 +329,51 @@ position:absolute;
         </div>
 
       </div>
-      <!-- Heading -->
-      <div class="">
-    <!--   <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalRegisterForm">Add File</button> -->
-    <a href="add_file.php"><button type="button" class="btn btn-success"><i class="fas fa-file-medical"></i>  Add File</button></a>
-    </div>
+<div class="">
   
-<hr>
- 
- <div class="col-md-12">
-
  <table id="dtable" class = "table table-striped">
-     <thead>
 
-    <th>Filename</th>
-    <th>FileSize</th>
-    <th>Uploader</th>
-     <th>Status</th>   
-    <th>Date/Time Upload</th>
-    <th>Downloads</th>
-    <th>Action</th>
 
-</thead>
-<tbody>
+          <thead>
+              <th>Name</th>
+              <th>Admin User</th>
+              <th>Admin Password</th>
+              <th>Status</th>
+               <th>Action</th>
+          </thead><br /><br />
+          <tbody>
+     <?php
+         require_once("include/connection.php");
 
+            $query="SELECT * FROM login_user";
+            $result=mysqli_query($conn,$query);
+            while($rs=mysqli_fetch_array($result)){
+                $id =  $rs['id'];
+               $fname=$rs['name'];
+               $admin=$rs['email_address'];
+               $pass=$rs['user_password'];
+               $status=$rs['user_status'];
+           
+          ?>       
     
-    <tr>
-        <?php 
-   
-        require_once("include/connection.php");
-
-      $query = mysqli_query($conn,"SELECT DISTINCT ID,NAME,SIZE,EMAIL,ADMIN_STATUS,TIMERS,DOWNLOAD FROM upload_files group by NAME DESC") or die (mysqli_error($con));
-      while($file=mysqli_fetch_array($query)){
-         $id =  $file['ID'];
-         $name =  $file['NAME'];
-         $size =  $file['SIZE'];
-         $uploads =  $file['EMAIL'];
-          $status =  $file['ADMIN_STATUS'];
-         $time =  $file['TIMERS'];
-         $download =  $file['DOWNLOAD'];
-    
-      ?>
-     
-      <td width="20%"><?php echo  $name; ?></td>
-      <td><?php echo floor($size / 1000) . ' KB'; ?></td>
-       <td><?php echo $uploads; ?></td>
-       <td><?php echo $status; ?></td>
-       <td><?php echo $time; ?></td>
-      <td><?php echo $download; ?></td>
-
-
-           <td><a href='downloads.php?file_id=<?php echo $id; ?>'  class="btn btn-sm btn-outline-primary"><i class="fa fa-download"></i></a> <a href='delete.php?ID=<?php echo $id; ?>'  class="btn btn-sm btn-outline-danger"><i class="fa fa-trash"></i></a>
-    </tr>
-<?php } ?>
-</tbody>
+           <tr>
+               <td width='10%'><?php echo  $fname; ?></td>
+               <td align='center'><?php echo $admin; ?></td>
+               <td align='center'><?php echo $pass; ?></td>
+               <td align='center'><?php echo $status; ?></td>
+               <td align='center'><a href="#modalRegisterFormss?id=<?php echo $id;?>"><i class="fas fa-user-edit" data-toggle="modal" data-target="#modalRegisterFormss"></i></a>  <a href="delete_user.php?id=<?php echo htmlentities($rs['id']); ?>"><i class='far fa-trash-alt'></i></a></td>
+            
+           </tr>
+       
+    <?php  } ?>
+       </tbody>
    </table>
-    </div>  
-    <!--Copyright-->
-    <hr></div>
-    <div class="footer-copyright py-3">
-     <p>All right Reserved &copy; <?php echo date('Y');?> Created By:JunilToledo</p>
-    </div>
-    <!--/.Copyright-->
 
-  </footer>
-  <!--/.Footer-->
-
+<!-- <div class="text-center">
+  <a href="" class="btn btn-default btn-rounded mb-4" data-toggle="modal" data-target="#modalRegisterForm">Launch
+    Modal Register Form</a>
+</div> -->
+    
 <!-- Card -->
   <!-- /Start your project here-->
 
@@ -408,5 +393,89 @@ position:absolute;
 <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/responsive/1.0.3/js/dataTables.responsive.js"></script>
 
 </body>
+   <!--modal--->
 
+
+
+
+
+
+<div class="modal fade" id="modalRegisterFormss" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+    <?php 
+
+require_once("include/connection.php");
+  
+$q = mysqli_query($conn,"select * from login_user where id = '$id'") or die (mysqli_error($conn));
+ $rs1 = mysqli_fetch_array($q);
+ 
+               $id1=$rs1['id'];
+               $fname1=$rs1['name'];
+               $admin1=$rs1['email_address'];
+               $pass1=$rs1['user_password'];
+               $status=$rs1['user_status'];
+?>
+  <div class="modal-dialog" role="document">
+    <form method="POST">
+    
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold"><i class="fas fa-user-edit"></i> Edit User</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+        <div class="modal-body mx-3">
+           <div class="md-form mb-5">
+            <input type="hidden" class="form-control" name="id" value="<?php echo $id1;?>"><br>
+        </div>
+        <div class="md-form mb-5">
+          <i class="fas fa-user prefix grey-text"></i>
+          <input type="text" id="orangeForm-name" name="name" value="<?php echo $fname1;?>" class="form-control validate">
+          <label data-error="wrong" data-success="right" for="orangeForm-name">Your name</label>
+        </div>
+        <div class="md-form mb-5">
+          <i class="fas fa-envelope prefix grey-text"></i>
+          <input type="email" id="orangeForm-email" name="email_address" value="<?php echo $admin1;?>" class="form-control validate">
+          <label data-error="wrong" data-success="right" for="orangeForm-email">Your email</label>
+        </div>
+
+        <div class="md-form mb-4">
+          <i class="fas fa-lock prefix grey-text"></i>
+          <input type="password" id="orangeForm-pass" name="user_password" value="<?php echo $pass1;?>" class="form-control validate">
+          <label data-error="wrong" data-success="right" for="orangeForm-pass">Your password</label>
+        </div>
+       <div class="md-form mb-4">
+          <i class="fas fa-user prefix grey-text"></i>
+          <input type="text" id="orangeForm-pass" name="status" value = "Employee" class="form-control validate" readonly="">
+          <label data-error="wrong" data-success="right" for="orangeForm-pass">User Status</label>
+        </div>
+      </div>
+      <div class="modal-footer d-flex justify-content-center">
+        <button class="btn btn-primary" name="edit">UPDATE</button>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+
+  <!--modal--->
+ <?php 
+
+ require_once("include/connection.php");
+
+  
+ if(isset($_POST['edit'])){
+         $user_name = mysqli_real_escape_string($conn,$_POST['name']);
+         $email_address = mysqli_real_escape_string($conn,$_POST['email_address']);
+         $user_password = password_hash($_POST['user_password'], PASSWORD_DEFAULT, array('cost' => 12));  
+       //  $user_status = mysqli_real_escape_string($conn,$_POST['status']);
+
+     mysqli_query($conn,"UPDATE `login_user` SET `name` = '$user_name', `email_address` = '$email_address', `user_password` = '$user_password' where id='$id'") or die (mysqli_error($conn));
+  
+  echo "<script type = 'text/javascript'>alert('Success Edit User/Employee!!!');document.location='view_user.php'</script>";
+
+}
+
+?>
 </html>
