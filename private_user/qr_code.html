@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner</title>
+    <script src="./node_modules/html5-qrcode/html5-qrcode.min.js"></script>
+    <script src = "qr_code.css"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        #reader {
+            width: 400px;
+            margin-bottom: 20px;
+        }
+        #result {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #333;
+        }
+        #manual-input {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 15px;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        input {
+            padding: 10px;
+            font-size: 1rem;
+            width: 300px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="reader"></div>
+    <div id="result"></div>
+    <div id="manual-input">
+        <h3>Enter Unique ID Manually</h3>
+        <input type="text" id="unique-id-input" placeholder="Enter Unique ID" />
+        <button onclick="submitUniqueId()">Submit</button>
+    </div>
+
+    <script>
+        // Initialize the QR code scanner
+        const scanner = new Html5QrcodeScanner("reader", {
+            qrbox: { width: 300, height: 300 },
+            fps: 10,
+        });
+
+        // Handle successful QR code scans
+        function success(result) {
+            console.log("QR Code Scanned:", result);
+            validateUniqueId(result);
+            scanner.clear();
+            document.getElementById("reader").remove();
+        }
+
+        // Handle QR code scanning errors
+        function error(err) {
+            console.error("QR Code Scanning Error:", err);
+            document.getElementById("result").innerHTML = `
+                <p class="error">No QR code detected. Please ensure the QR code is clearly visible and try again.</p>
+            `;
+        }
+
+        // Render the QR code scanner
+        scanner.render(success, error);
+
+        // Handle manual unique ID submission
+        function submitUniqueId() {
+            const inputUniqueId = document.getElementById("unique-id-input").value.trim();
+
+            if (!inputUniqueId) {
+                document.getElementById("result").innerHTML = `
+                    <p class="error">Please enter a unique ID.</p>
+                `;
+                return;
+            }
+
+            validateUniqueId(inputUniqueId);
+        }
+
+        // Validate the unique ID via AJAX request
+        function validateUniqueId(uniqueId) {
+            fetch("check_unique_id.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ unique_id: uniqueId }),
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    console.log("Response from server:", data);
+                    if (data.exists) {
+                        displayNotification(uniqueId, true);
+                    } else {
+                        displayNotification(uniqueId, false);
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error validating unique ID:", error);
+                    document.getElementById("result").innerHTML = `
+                        <p class="error">An error occurred while validating the unique ID. Please try again later.</p>
+                    `;
+                });
+        }
+
+        // Display a success or error message and pop-up notification
+        function displayNotification(uniqueId, isValid) {
+            if (isValid) {
+                document.getElementById("result").innerHTML = `
+                    <h2>You Scanned Document Successfully!</h2>
+                    <p>You entered: <strong>${uniqueId}</strong></p>
+                `;
+                showPopUp("QR Code is Valid", `Unique  "${uniqueId}" was Scanned successfully!`);
+            } else {
+                document.getElementById("result").innerHTML = `
+                    <p class="error">Invalid Unique ID. Please try again.</p>
+                `;
+                showPopUp("Invalid Unique ID", `Unique ID "${uniqueId}" is not valid.`);
+            }
+        }
+
+        // Show a pop-up notification
+        function showPopUp(title, message) {
+            if ("Notification" in window) {
+                Notification.requestPermission().then((permission) => {
+                    if (permission === "granted") {
+                        new Notification(title, {
+                            body: message,
+                            icon: "https://via.placeholder.com/50", // Replace with your custom icon URL
+                        });
+                    } else {
+                        alert(`${title}: ${message}`);
+                    }
+                });
+            } else {
+                alert(`${title}: ${message}`);
+            }
+        }
+    </script>
+</body>
+</html>
